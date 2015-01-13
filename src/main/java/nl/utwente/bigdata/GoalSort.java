@@ -18,11 +18,16 @@
 package nl.utwente.bigdata;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -32,20 +37,28 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
-public class TwitterExample {
+public class GoalSort {
 
-  public static class ExampleMapper 
-       extends Mapper<Object, Text, Text, Text>{
+  public static Date getTwitterDate(String date) throws java.text.ParseException{
+    final String TWITTER =  "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+    SimpleDateFormat sf = new SimpleDateFormat(TWITTER, Locale.ENGLISH);
+    sf.setLenient(true);
+    return sf.parse(date);
+   }
     
-    private Text idString  = new Text();
+  public static class TimestampMapper 
+       extends Mapper<Object, Text, LongWritable, Text>{
+    
+    private LongWritable tweetTimestamp  = new LongWritable();
     private Text tweetText = new Text();
     private JSONParser parser = new JSONParser();
     private Map tweet;
       
-    public void map(Object key, Text value, Context context
-                    ) throws IOException, InterruptedException {
+    public void map(Object key, Text value, Reducer.Context context
+                    ) throws IOException, InterruptedException, ParseException, java.text.ParseException {
 
       try {
         tweet = (Map<String, Object>) parser.parse(value.toString());
@@ -53,21 +66,30 @@ public class TwitterExample {
       catch (ClassCastException e) {  
         return; // do nothing (we might log this)
       }
-      catch (org.json.simple.parser.ParseException e) {  
-        return; // do nothing 
+      
+      //Get key
+      String createdAtString = (String)tweet.get("created_at");
+      try {
+        Date createdAt = getTwitterDate(createdAtString);
+        long timestamp =createdAt.getTime();
+        tweetTimestamp.set(timestamp);
       }
-
-      idString.set((String) tweet.get("id_str"));
-      tweetText.set(((String) tweet.get("text")).replaceAll("\n", " "));
-      context.write(idString, tweetText);
+      catch (java.text.ParseException e) {  
+		System.out.println("Couldnt parse");
+        return; // do nothing (we might log this)
+      }
+      
+      //Get text
+      tweetText.set(((String)tweet.get("text")).replaceAll("\n", " "));
+      context.write(tweetTimestamp, tweetText);
     } 
   }
   
-  public static class ExampleReducer 
-       extends Reducer<Text, Text, Text, Text> {
+  public static class GoalReducer 
+       extends Reducer<LongWritable, Text, LongWritable, ArrayWritable> {
 
     public void reduce(Text key, Iterable<Text> values, 
-                       Context context
+                       Reducer.Context context
                        ) throws IOException, InterruptedException {
       for (Text value : values) {
         context.write(key, value);
@@ -80,13 +102,13 @@ public class TwitterExample {
       
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     if (otherArgs.length < 2) {
-      System.err.println("Usage: exampleTwitter <in> [<in>...] <out>");
+      System.err.println("Usage: GoalSort <in> [<in>...] <out>");
       System.exit(2);
     }
-    Job job = new Job(conf, "Twitter Reader");
+    Job job = new Job(conf, "Goal sorter");
     job.setJarByClass(TwitterExample.class);
-    job.setMapperClass(ExampleMapper.class);
-    job.setReducerClass(ExampleReducer.class);
+    job.setMapperClass(TimestampMapper.class);
+    job.setReducerClass(GoalReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
     for (int i = 0; i < otherArgs.length - 1; ++i) {
