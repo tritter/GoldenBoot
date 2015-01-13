@@ -27,20 +27,15 @@ import org.apache.commons.collections.IteratorUtils;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.ArrayWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 
 public class GoalSort {
@@ -54,12 +49,12 @@ public class GoalSort {
   
   public static boolean isGoal(Text tweetText){
       String rawText = tweetText.toString().toLowerCase();
-      return (rawText.contains("gol")) ||
-             (rawText.contains("goal")) ||
-             (rawText.contains("ประตู")) ||
-             (rawText.contains("tor")) ||
-             (rawText.contains("ゴール")) ||
-             (rawText.contains("doelpunt")) || //Because we are in the Netherlands ^^
+      return (rawText.contains("^gol (.*)|(.*) gol (.*)|(.*) gol")) ||
+             (rawText.contains("^goal (.*)|(.*) goal (.*)|(.*) goal")) ||
+             (rawText.contains("^ประตู (.*)|(.*) ประตู (.*)|(.*) ประตู")) ||
+             (rawText.contains("^tor (.*)|(.*) tor (.*)|(.*) tor")) ||
+             (rawText.contains("^ゴール (.*)|(.*) ゴール (.*)|(.*) ゴール")) ||
+             (rawText.contains("^doelpunt (.*)|(.*) doelpunt (.*)|(.*) doelpunt")) || //Because we are in the Netherlands ^^
              (rawText.matches("(.*)\\d{1}-\\d{1}(.*)")) ||
              (rawText.matches("(.*)\\d{1} - \\d{1}(.*)"));
   }
@@ -116,7 +111,7 @@ public class GoalSort {
     Job job = new Job(conf, "Goal sorter");
     job.setJarByClass(TwitterExample.class);
     job.setMapperClass(GoalMapper.class);
-    job.setOutputKeyClass(Text.class);
+    job.setOutputKeyClass(LongWritable.class);
     job.setOutputValueClass(Text.class);
     for (int i = 0; i < otherArgs.length - 1; ++i) {
       FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
