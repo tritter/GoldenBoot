@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nl.utwente.bigdata.GoalSort;
 import org.apache.hadoop.io.ArrayWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
  
 import org.apache.hadoop.io.Text;
@@ -22,21 +23,23 @@ public class GoalSortTest {
   @Before
   public void setUp() {
     GoalSort.TimestampMapper mapper   = new GoalSort.TimestampMapper();
-    GoalSort.GoalReducer reducer = new GoalSort.GoalReducer();
+//    GoalSort.GoalReducer reducer = new GoalSort.GoalReducer();
     mapDriver = MapDriver.newMapDriver(mapper);
-    reduceDriver = ReduceDriver.newReduceDriver(reducer);
-    mapReduceDriver = MapReduceDriver.newMapReduceDriver(mapper, reducer);
+//    reduceDriver = ReduceDriver.newReduceDriver(reducer);
+//    mapReduceDriver = MapReduceDriver.newMapReduceDriver(mapper, reducer);
   }
  
 
-  @Test
-  public void testMapper() {
-    Object key = new Object();
-    Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world!\",\"id_str\":\"1\", \"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
-    mapDriver.withInput(key, value);
-    mapDriver.withOutput(new LongWritable(1404364640), new Text("Hello world!"));
-    mapDriver.runTest();
-  }
+    
+    @Test
+    public void testMapper() {
+        Object key = new Object();
+        Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
+        mapDriver.withInput(key, value);
+        long tweetTimestamp = Long.valueOf("1404364640000");
+        mapDriver.withOutput(new LongWritable(tweetTimestamp), new Text("Hello world!"));
+        mapDriver.runTest();
+    }
  
 
 //  @Test

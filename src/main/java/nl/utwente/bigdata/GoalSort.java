@@ -48,54 +48,90 @@ public class GoalSort {
     sf.setLenient(true);
     return sf.parse(date);
    }
-    
-  public static class TimestampMapper 
-       extends Mapper<Object, Text, LongWritable, Text>{
-    
-    private LongWritable tweetTimestamp  = new LongWritable();
-    private Text tweetText = new Text();
-    private JSONParser parser = new JSONParser();
-    private Map tweet;
-      
-    public void map(Object key, Text value, Reducer.Context context
-                    ) throws IOException, InterruptedException, ParseException, java.text.ParseException {
-
-      try {
-        tweet = (Map<String, Object>) parser.parse(value.toString());
-      }
-      catch (ClassCastException e) {  
-        return; // do nothing (we might log this)
-      }
-      
-      //Get key
-      String createdAtString = (String)tweet.get("created_at");
-      try {
-        Date createdAt = getTwitterDate(createdAtString);
-        long timestamp =createdAt.getTime();
-        tweetTimestamp.set(timestamp);
-      }
-      catch (java.text.ParseException e) {  
-		System.out.println("Couldnt parse");
-        return; // do nothing (we might log this)
-      }
-      
-      //Get text
-      tweetText.set(((String)tweet.get("text")).replaceAll("\n", " "));
-      context.write(tweetTimestamp, tweetText);
-    } 
-  }
-  
-  public static class GoalReducer 
-       extends Reducer<LongWritable, Text, LongWritable, ArrayWritable> {
-
-    public void reduce(Text key, Iterable<Text> values, 
-                       Reducer.Context context
-                       ) throws IOException, InterruptedException {
-      for (Text value : values) {
-        context.write(key, value);
-      }
+ public static class TimestampMapper
+    extends Mapper<Object, Text, LongWritable,Text>{
+        
+        private LongWritable tweetTimestamp = new LongWritable();
+        private Text tweetText = new Text();
+        
+        private JSONParser parser = new JSONParser();
+        private Map tweet;
+        
+        public void map(Object key, Text value, Mapper.Context context
+                        ) throws IOException, InterruptedException {
+            
+            try {
+                tweet = (Map<String, Object>) parser.parse(value.toString());
+            }
+            catch (ClassCastException e) {
+                return; // do nothing (we might log this)
+            }
+            catch (org.json.simple.parser.ParseException e) {
+                return; // do nothing
+            }
+            
+            //      //Get key
+            String createdAtString = (String)tweet.get("created_at");
+            try { 
+                Date createdAt = getTwitterDate(createdAtString);
+                long timestamp = createdAt.getTime();
+                tweetTimestamp.set(timestamp);
+            }
+            catch (java.text.ParseException e) {  
+                return; // do nothing 
+            }
+            tweetText.set(((String) tweet.get("text")).replaceAll("\n", " "));
+            context.write(tweetTimestamp, tweetText);
+        }
     }
-  }
+       
+//  public static class TimestampMapper 
+//       extends Mapper<Object, Text, IntWritable, Text>{
+//    
+//    private LongWritable tweetTimestamp  = new LongWritable();
+//    private Text tweetText = new Text();
+//    private JSONParser parser = new JSONParser();
+//    private Map tweet;
+//      
+//    public void map(Object key, Text value, Reducer.Context context
+//                    ) throws IOException, InterruptedException, ParseException, java.text.ParseException {
+//
+//      try {
+//        tweet = (Map<String, Object>) parser.parse(value.toString());
+//      }
+//      catch (ClassCastException e) {  
+//        return; // do nothing (we might log this)
+//      }
+//      
+//      //Get key
+//      String createdAtString = (String)tweet.get("created_at");
+//      try {
+//        Date createdAt = getTwitterDate(createdAtString);
+//        long timestamp =createdAt.getTime();
+//        tweetTimestamp.set(timestamp);
+//      }
+//      catch (java.text.ParseException e) {  
+//		System.out.println("Couldnt parse");
+//        return; // do nothing (we might log this)
+//      }
+//      
+//      //Get text
+//      tweetText.set(((String)tweet.get("text")).replaceAll("\n", " "));
+//      context.write(new LongWritable(1404364640), new Text("Hello world!"));
+//    } 
+//  }
+  
+//  public static class GoalReducer 
+//       extends Reducer<LongWritable, Text, LongWritable, ArrayWritable> {
+//
+//    public void reduce(Text key, Iterable<Text> values, 
+//                       Reducer.Context context
+//                       ) throws IOException, InterruptedException {
+//      for (Text value : values) {
+//        context.write(key, value);
+//      }
+//    }
+//  }
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
@@ -108,7 +144,7 @@ public class GoalSort {
     Job job = new Job(conf, "Goal sorter");
     job.setJarByClass(TwitterExample.class);
     job.setMapperClass(TimestampMapper.class);
-    job.setReducerClass(GoalReducer.class);
+//    job.setReducerClass(GoalReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
     for (int i = 0; i < otherArgs.length - 1; ++i) {
