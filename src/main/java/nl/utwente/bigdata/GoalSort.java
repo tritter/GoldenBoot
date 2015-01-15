@@ -49,14 +49,8 @@ public class GoalSort {
   
   public static boolean isGoal(Text tweetText){
       String rawText = tweetText.toString().toLowerCase();
-      return (rawText.contains("^gol (.*)|(.*) gol (.*)|(.*) gol")) ||
-             (rawText.contains("^goal (.*)|(.*) goal (.*)|(.*) goal")) ||
-             (rawText.contains("^ประตู (.*)|(.*) ประตู (.*)|(.*) ประตู")) ||
-             (rawText.contains("^tor (.*)|(.*) tor (.*)|(.*) tor")) ||
-             (rawText.contains("^ゴール (.*)|(.*) ゴール (.*)|(.*) ゴール")) ||
-             (rawText.contains("^doelpunt (.*)|(.*) doelpunt (.*)|(.*) doelpunt")) || //Because we are in the Netherlands ^^
-             (rawText.matches("(.*)\\d{1}-\\d{1}(.*)")) ||
-             (rawText.matches("(.*)\\d{1} - \\d{1}(.*)"));
+      return (rawText.matches("^(.*?(\\b(gol|goal|ประตู|tor|ゴール|doelpunt)\\b)[^$]*)$")) || //Check keywords
+             (rawText.matches("(.*)(\\d{1}-\\d{1}|\\d{1} - \\d{1})(.*)")); //Check scores
   }
   
  public static class GoalMapper
