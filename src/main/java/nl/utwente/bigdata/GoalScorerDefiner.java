@@ -10,9 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -51,35 +53,28 @@ public class GoalScorerDefiner {
     }
     
     public static class CountReducer extends Reducer<Text,Text,Text,IntWritable> {  
-        
-        // Create hashmap with key (PLAYERNAME) and value (number of times)
-        // Loop through tweets and get player name
-        
-        /*
-            PLAYER NAME     -   COUNT
-            Arjan Robben        5
-            Mario Gotze         1
-        */
-        
-        private IntWritable result = new IntWritable();
+
+        private Text playerResult;
         
         public void reduce(Text key, Iterable<Text> values, Reducer.Context context ) throws IOException, InterruptedException {
-            int sum = 0;
-            HashMap<Text, Text> playerCount = new HashMap<Text, Text>();
+            HashMap<Text, Integer> playerCountMap = new HashMap<>();
         
-            for (Text val : values) {            
-                
-                
-                
-//                if(key!){
-//                    add(player, 1);
-//                }else{
-//                    get(player,+1);
-//                }
+            for (Text val : values) {  
+                if(playerCountMap.get(key) == null) {
+                    playerCountMap.put(val, 1);
+                } else {
+                    playerCountMap.put(key, playerCountMap.get(key) + 1);
+                }
+            }
+            
+            int maxValueInMap = (Collections.max(playerCountMap.values()));
+            for (Entry<Text, Integer> entry : playerCountMap.entrySet()) {  
+                if (entry.getValue()==maxValueInMap) {
+                    Text playerResult = entry.getKey();
+                }
             }
 
-            result.set(sum);
-            context.write(key, result);
+            context.write(key, playerResult);
         }
         
     }
