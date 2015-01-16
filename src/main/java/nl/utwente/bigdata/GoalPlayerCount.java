@@ -55,7 +55,7 @@ public class GoalPlayerCount {
             System.exit(2);
         }
         Job job = new Job(conf, "GoldenBoot GoalPlayerCount");
-        job.setJarByClass(UserCount.class);
+        job.setJarByClass(GoalPlayerCount.class);
         job.setMapperClass(CountMapper.class);
         job.setCombinerClass(CountReducer.class);
         job.setReducerClass(CountReducer.class);

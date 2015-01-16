@@ -116,7 +116,7 @@ public class GoalDefiner {
       System.exit(2);
     }
     Job job = new Job(conf, "Goal sorter");
-    job.setJarByClass(TwitterExample.class);
+    job.setJarByClass(GoalScorerDefiner.class);
     job.setMapperClass(GoalMapper.class);
     job.setOutputKeyClass(LongWritable.class);
     job.setOutputValueClass(Text.class);

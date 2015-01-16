@@ -23,6 +23,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
+import org.apache.hadoop.util.StringUtils;
 
 /**
  *
@@ -37,47 +38,52 @@ public class GoalScorerDefiner {
     
     public static class ScoreMapper extends Mapper<Text, Text, Text, Text> {
         
-        public void map(Text key, Text value, Reducer.Context context) throws IOException, InterruptedException {
+        public void map(Text key, Text value,Context context) throws IOException, InterruptedException {
             String tweet = String.valueOf(value).toLowerCase();
-            boolean containsPlayer = false;
-            String[] player = null;
+            Text player = null;
             for (String[] playerName : playerNames) { //Surename
-                containsPlayer = containsPlayerName(getSurname(playerName), tweet);
-                player = playerName;
+                boolean containsPlayer = containsPlayerName(getSurname(playerName), tweet);
+                if(containsPlayer){
+                    player = new Text(StringUtils.join(" ", playerName));
+                    break;
+                }
+            }
+
+            if(player == null){
+                for (String[] playerName : playerNames) {
+                    boolean containsPlayer = containsPlayerName(getFirstName(playerName), tweet);
+                    if(containsPlayer){
+                        player = new Text(StringUtils.join(" ", playerName));
+                        break;
+                    }
+                }
             }
             
-            if(!containsPlayer){
-            for (String[] playerName : playerNames) {
-                containsPlayer = containsPlayerName(getFirstName(playerName), tweet);
-                player = playerName;
-            }}
-            
-            if(containsPlayer){
-                Text playerFullName = new Text(getFirstName(player) + " " + getSurname(player));
-                context.write(key, playerFullName);
+            if(player != null){
+                context.write(key, player);
             }
         }
     }
     
     public static class ScoreReducer extends Reducer<Text,Text,Text,Text> {  
 
-        private Text playerResult;
+        private Text playerResult = new Text();
         
-        public void reduce(Text key, Iterable<Text> values, Reducer.Context context ) throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Context context ) throws IOException, InterruptedException {
             HashMap<Text, Integer> playerCountMap = new HashMap<>();
         
             for (Text val : values) {  
-                if(playerCountMap.get(key) == null) {
+                if(playerCountMap.get(val) == null) {
                     playerCountMap.put(val, 1);
                 } else {
-                    playerCountMap.put(key, playerCountMap.get(key) + 1);
+                    playerCountMap.put(val, playerCountMap.get(val) + 1);
                 }
             }
             
             int maxValueInMap = (Collections.max(playerCountMap.values()));
             for (Entry<Text, Integer> entry : playerCountMap.entrySet()) {  
                 if (entry.getValue()==maxValueInMap) {
-                    Text playerResult = entry.getKey();
+                    playerResult = entry.getKey();
                 }
             }
 

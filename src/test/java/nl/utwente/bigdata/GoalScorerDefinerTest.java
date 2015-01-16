@@ -55,7 +55,7 @@ public class GoalScorerDefinerTest {
         Text key = new Text("20140703053");
         Text value = new Text("Hello world my Mueller did score!");
         mapDriver.withInput(key, value);
-        mapDriver.withOutput(key, new Text("Thomas Mueller"));
+        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
     
@@ -64,7 +64,7 @@ public class GoalScorerDefinerTest {
         Text key = new Text("20140703053");
         Text value = new Text("Hello world my Thomas did score!");
         mapDriver.withInput(key, value);
-        mapDriver.withOutput(key, new Text("Thomas Mueller"));
+        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
     
@@ -73,11 +73,11 @@ public class GoalScorerDefinerTest {
         Text key = new Text("20140703053");
         List<Text> values = new ArrayList<Text>();
         values.add(new Text("Thomas Mueller"));
-        values.add(new Text("Arjen Robben"));
-        values.add(new Text("Arjen Robben"));
+        values.add(new Text("Arjen ROBBEN"));
+        values.add(new Text("Arjen ROBBEN"));
 
         reduceDriver.withInput(key, values);
-        reduceDriver.withOutput(key, new Text("Arjen Robben"));
+        reduceDriver.withOutput(key, new Text("Arjen ROBBEN"));
         reduceDriver.runTest();
     }
     
@@ -86,7 +86,7 @@ public class GoalScorerDefinerTest {
         Text key = new Text("20140703053");
         Text value = new Text("Hello world my Mueller did score!");
         mapReduceDriver.withInput(key, value);
-        mapReduceDriver.withOutput(key, new Text("Arjen Robben"));
+        mapReduceDriver.withOutput(key, new Text("Thomas MUELLER"));
         mapReduceDriver.runTest();
     }
  
