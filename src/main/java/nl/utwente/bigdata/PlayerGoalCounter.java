@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class PlayerGoalCounter { 
     
-    public static List<String[]> playerNames = new ArrayList<String[]>();
-    public static List<GoalByPlayer> goalsWithPlayer = new ArrayList<GoalByPlayer>();
+    public static List<String[]> playerNames = new ArrayList<>();
+    public static List<GoalByPlayer> goalsWithPlayer = new ArrayList<>();
     
     public static void main(String[] args) {
         PlayerGoalCounter obj = new PlayerGoalCounter();
@@ -35,8 +35,8 @@ public class PlayerGoalCounter {
         
         obj.findPlayerNameInTweets(inputArray);
         
-        for(int i = 0; i < goalsWithPlayer.size(); i++) {
-            System.out.println(goalsWithPlayer.get(i).goal + ": " + goalsWithPlayer.get(i).player);
+        for (GoalByPlayer goalsWithPlayer1 : goalsWithPlayer) {
+            System.out.println(goalsWithPlayer1.goal + ": " + goalsWithPlayer1.player);
         }
     }
      
@@ -52,13 +52,12 @@ public class PlayerGoalCounter {
                 playerNames.add(fullPlayerName.split(" "));
             }
         } 
-        catch (FileNotFoundException e) { e.printStackTrace(); }
-        catch (IOException e) { e.printStackTrace(); } 
+        catch (FileNotFoundException e) {} catch (IOException e) {} 
         finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) {}
             }
         }
     }
