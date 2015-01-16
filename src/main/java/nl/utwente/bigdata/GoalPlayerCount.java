@@ -26,8 +26,6 @@ public class GoalPlayerCount {
     extends Mapper<Text, Text, Text, IntWritable>{
         
         private final static IntWritable one = new IntWritable(1);
-
-        @Override
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             context.write(value, one);
         }

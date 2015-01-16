@@ -36,23 +36,23 @@ public class GoalPlayerCountTest {
         mapDriver.runTest();
     }
     
-//    @Test
-//    public void testReducer() {
-//        List<IntWritable> values = new ArrayList<IntWritable>();
-//        values.add(new IntWritable(1));
-//        values.add(new IntWritable(1));
-//        reduceDriver.withInput(new Text("Arjen Robben"), values);
-//        reduceDriver.withOutput(new Text("Arjen Robben"), new IntWritable(2));
-//        reduceDriver.runTest();
-//    }
-//    
-//    @Test
-//    public void testMapReduce() {
-//        Text key = new Text("20140703053");
-//        Text value = new Text("Arjen Robben");
-//        mapReduceDriver.withInput(key, value);
-//        mapReduceDriver.withOutput(value, new IntWritable(1));
-//        mapReduceDriver.runTest();
-//    }
+    @Test
+    public void testReducer() {
+        List<IntWritable> values = new ArrayList<IntWritable>();
+        values.add(new IntWritable(1));
+        values.add(new IntWritable(1));
+        reduceDriver.withInput(new Text("Arjen Robben"), values);
+        reduceDriver.withOutput(new Text("Arjen Robben"), new IntWritable(2));
+        reduceDriver.runTest();
+    }
+    
+    @Test
+    public void testMapReduce() {
+        Text key = new Text("20140703053");
+        Text value = new Text("Arjen Robben");
+        mapReduceDriver.withInput(key, value);
+        mapReduceDriver.withOutput(value, new IntWritable(1));
+        mapReduceDriver.runTest();
+    }
     
 }
