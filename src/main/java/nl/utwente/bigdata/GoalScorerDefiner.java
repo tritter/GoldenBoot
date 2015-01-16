@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
@@ -29,9 +30,6 @@ import org.json.simple.parser.JSONParser;
  * @author ime
  */
 public class GoalScorerDefiner { 
-    
-    
-    public static List<GoalByPlayer> goalsWithPlayer = new ArrayList<>();
     private static final List<String[]> playerNames = importCSVFile("res/players.csv");
     
     public static class CountMapper extends Mapper<Text, Text, Text, IntWritable> {
@@ -52,21 +50,34 @@ public class GoalScorerDefiner {
         }
     }
     
-    public static class CountReducer
-    extends Reducer<Text,IntWritable,Text,IntWritable> {  
+    public static class CountReducer extends Reducer<Text,Text,Text,IntWritable> {  
         
-        // Create hashmap with key (key) and value (number of goals)
+        // Create hashmap with key (PLAYERNAME) and value (number of times)
         // Loop through tweets and get player name
+        
+        /*
+            PLAYER NAME     -   COUNT
+            Arjan Robben        5
+            Mario Gotze         1
+        */
         
         private IntWritable result = new IntWritable();
         
-        public void reduce(Text key, Iterable<IntWritable> values,
-                           Reducer.Context context
-                           ) throws IOException, InterruptedException {
+        public void reduce(Text key, Iterable<Text> values, Reducer.Context context ) throws IOException, InterruptedException {
             int sum = 0;
-            for (IntWritable val : values) {
-                sum += val.get();
+            HashMap<Text, Text> playerCount = new HashMap<Text, Text>();
+        
+            for (Text val : values) {            
+                
+                
+                
+//                if(key!){
+//                    add(player, 1);
+//                }else{
+//                    get(player,+1);
+//                }
             }
+
             result.set(sum);
             context.write(key, result);
         }
