@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import nl.utwente.bigdata.GoalPlayerCount;
+import nl.utwente.bigdata.UserCount;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.IntWritable;
@@ -41,8 +42,8 @@ public class GoalPlayerCountTest {
         List<IntWritable> values = new ArrayList<IntWritable>();
         values.add(new IntWritable(1));
         values.add(new IntWritable(1));
-        reduceDriver.withInput(new Text("Arjen Robben"), values);
-        reduceDriver.withOutput(new Text("Arjen Robben"), new IntWritable(2));
+        reduceDriver.withInput(new Text("1"), values);
+        reduceDriver.withOutput(new Text("1"), new IntWritable(2));
         reduceDriver.runTest();
     }
     

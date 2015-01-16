@@ -24,19 +24,19 @@ import org.apache.hadoop.util.GenericOptionsParser;
 public class GoalPlayerCount {
     public static class CountMapper
     extends Mapper<Text, Text, Text, IntWritable>{
-        
         private final static IntWritable one = new IntWritable(1);
+        
         public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             context.write(value, one);
         }
     }
     
-    public static class CountReducer
+     public static class CountReducer
     extends Reducer<Text,IntWritable,Text,IntWritable> {
         private IntWritable result = new IntWritable();
         
         public void reduce(Text key, Iterable<IntWritable> values,
-                           Reducer.Context context
+                           Context context
                            ) throws IOException, InterruptedException {
             int sum = 0;
             for (IntWritable val : values) {
@@ -45,7 +45,6 @@ public class GoalPlayerCount {
             result.set(sum);
             context.write(key, result);
         }
-        
     }
     
     public static void main(String[] args) throws Exception {
