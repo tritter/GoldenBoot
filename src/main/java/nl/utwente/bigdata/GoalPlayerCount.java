@@ -28,7 +28,7 @@ public class GoalPlayerCount {
         private final static IntWritable one = new IntWritable(1);
 
         @Override
-        protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
             context.write(value, one);
         }
     }
