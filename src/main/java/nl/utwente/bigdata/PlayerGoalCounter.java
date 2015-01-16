@@ -16,19 +16,7 @@ import java.util.List;
  *
  * @author ime
  */
-public class PlayerGoalCounter {
-    
-    
-    /*
-    
-    Mapper:
-    Get inputArray and for every row, find the playername in the tweet!
-    
-    Reducer:
-    Compare all the rows with the same goal and choose which player 
-    
-    */
-    
+public class PlayerGoalCounter { 
     
     public static List<String[]> playerNames = new ArrayList<String[]>();
     public static List<GoalByPlayer> goalsWithPlayer = new ArrayList<GoalByPlayer>();
@@ -36,13 +24,13 @@ public class PlayerGoalCounter {
     public static void main(String[] args) {
         PlayerGoalCounter obj = new PlayerGoalCounter();
         obj.importCSVFile("res/players.csv");
-        
-        // Lower case!
+
         GoalTweet[] inputArray = { 
-            new GoalTweet(12345, "dit is een test tweet voor arjen"),
+            new GoalTweet(12345, "dit is een test tweet voor Arjen"),
             new GoalTweet(23456, "tweede tweet"),
-            new GoalTweet(344, "wat een goal van robin van persie!"),
-            new GoalTweet(234, "goetze had een prachtgoal!")
+            new GoalTweet(344, "wat een goal van Robin van persie!"),
+            new GoalTweet(344, "goetze fout"),
+            new GoalTweet(344, "goal robin van persie!")
         };      
         
         obj.findPlayerNameInTweets(inputArray);
@@ -79,12 +67,13 @@ public class PlayerGoalCounter {
     // If player is mentioned, add the goal and playername to the list goalsWithPlayer
     public void findPlayerNameInTweets(GoalTweet[] goalTweets) {
         for (GoalTweet goalTweet : goalTweets) {
+            String tweet = goalTweet.tweet.toLowerCase();
             for (String[] playerName : playerNames) {
                 String firstName = getFirstName(playerName);
                 
-                if (firstName != null && goalTweet.tweet.matches("^(.*?(\\b(" + getFirstName(playerName) + ")\\b)[^$]*)$")) {
+                if (firstName != null && tweet.matches("^(.*?(\\b(" + getFirstName(playerName) + ")\\b)[^$]*)$")) {
                     goalsWithPlayer.add(new GoalByPlayer(goalTweet.goal, getFirstName(playerName) + " " + getSurname(playerName)));
-                } else if (goalTweet.tweet.matches("^(.*?(\\b(" + getSurname(playerName) + ")\\b)[^$]*)$")) {
+                } else if (tweet.matches("^(.*?(\\b(" + getSurname(playerName) + ")\\b)[^$]*)$")) {
                     goalsWithPlayer.add(new GoalByPlayer(goalTweet.goal, getFirstName(playerName) + " " + getSurname(playerName)));
                 }
             }
