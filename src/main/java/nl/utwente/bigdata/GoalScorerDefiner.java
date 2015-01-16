@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -25,7 +23,6 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
-import org.json.simple.parser.JSONParser;
 
 /**
  *
@@ -34,20 +31,30 @@ import org.json.simple.parser.JSONParser;
 public class GoalScorerDefiner { 
     private static final List<String[]> playerNames = importCSVFile("res/players.csv");
     
+    private static boolean containsPlayerName(String name, String text){
+        return (name != null && text.matches("^(.*?(\\b(" + name + ")\\b)[^$]*)$"));
+    }
+    
     public static class ScoreMapper extends Mapper<Text, Text, Text, Text> {
         
         public void map(Text key, Text value, Reducer.Context context) throws IOException, InterruptedException {
             String tweet = String.valueOf(value).toLowerCase();
+            boolean containsPlayer = false;
+            String[] player = null;
+            for (String[] playerName : playerNames) { //Surename
+                containsPlayer = containsPlayerName(getSurname(playerName), tweet);
+                player = playerName;
+            }
             
+            if(!containsPlayer){
             for (String[] playerName : playerNames) {
-                String firstName = getFirstName(playerName);
-                Text playerFullName = new Text(getFirstName(playerName) + " " + getSurname(playerName));
-                
-                if (firstName != null && tweet.matches("^(.*?(\\b(" + getFirstName(playerName) + ")\\b)[^$]*)$")) {
-                    context.write(key, playerFullName);
-                } else if (tweet.matches("^(.*?(\\b(" + getSurname(playerName) + ")\\b)[^$]*)$")) {
-                    context.write(key, playerFullName);
-                }
+                containsPlayer = containsPlayerName(getFirstName(playerName), tweet);
+                player = playerName;
+            }}
+            
+            if(containsPlayer){
+                Text playerFullName = new Text(getFirstName(player) + " " + getSurname(player));
+                context.write(key, playerFullName);
             }
         }
     }
