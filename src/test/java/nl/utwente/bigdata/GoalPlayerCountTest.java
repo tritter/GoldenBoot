@@ -1,6 +1,7 @@
+package nl.utwente.bigdata;
+
 import java.util.ArrayList;
 import java.util.List;
-import nl.utwente.bigdata.GoalPlayerCount;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.IntWritable;

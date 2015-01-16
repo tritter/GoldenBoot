@@ -1,7 +1,7 @@
+package nl.utwente.bigdata;
+
 import java.io.IOException;
 import java.util.List;
-import nl.utwente.bigdata.GoalDefiner;
-import org.apache.hadoop.io.IntWritable;
  
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
