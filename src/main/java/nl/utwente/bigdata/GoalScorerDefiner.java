@@ -34,7 +34,7 @@ import org.json.simple.parser.JSONParser;
 public class GoalScorerDefiner { 
     private static final List<String[]> playerNames = importCSVFile("res/players.csv");
     
-    public static class CountMapper extends Mapper<Text, Text, Text, IntWritable> {
+    public static class ScoreMapper extends Mapper<Text, Text, Text, Text> {
         
         public void map(Text key, Text value, Reducer.Context context) throws IOException, InterruptedException {
             String tweet = String.valueOf(value).toLowerCase();
@@ -52,7 +52,7 @@ public class GoalScorerDefiner {
         }
     }
     
-    public static class CountReducer extends Reducer<Text,Text,Text,IntWritable> {  
+    public static class ScoreReducer extends Reducer<Text,Text,Text,Text> {  
 
         private Text playerResult;
         
@@ -88,11 +88,11 @@ public class GoalScorerDefiner {
         }
         Job job = new Job(conf, "Twitter UserCounter");
         job.setJarByClass(GoalScorerDefiner.class);
-        job.setMapperClass(GoalScorerDefiner.CountMapper.class);
-        job.setCombinerClass(GoalScorerDefiner.CountReducer.class);
-        job.setReducerClass(GoalScorerDefiner.CountReducer.class);
+        job.setMapperClass(GoalScorerDefiner.ScoreMapper.class);
+        job.setCombinerClass(GoalScorerDefiner.ScoreReducer.class);
+        job.setReducerClass(GoalScorerDefiner.ScoreReducer.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
             FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
         }
