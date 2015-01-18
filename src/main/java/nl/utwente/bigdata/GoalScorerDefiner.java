@@ -32,8 +32,24 @@ import org.apache.hadoop.util.StringUtils;
 public class GoalScorerDefiner { 
     private static final List<String[]> playerNames = importCSVFile("res/players.csv");
     
+    private static String normalizeCharacters(String text){
+        text = text.replace("ü", "ue");
+        text = text.replace("ö", "oe");
+        text = text.replace("ā", "ae");
+        text = text.replace("ë", "e");
+        text = text.replace("á", "a");
+        text = text.replace("é", "e");
+        text = text.replace("ç", "c");
+        text = text.replace("à", "a");
+        text = text.replace("è", "e");
+        text = text.replace("ù", "u");
+
+        return text;
+    }
+    
     private static boolean containsPlayerName(String name, String text){
-        return (name != null && text.matches("^(.*?(\\b(" + name + ")\\b)[^$]*)$"));
+        String normalizedString = normalizeCharacters(text);
+        return (name != null && normalizedString.matches("^(.*?(\\b(" + name + ")\\b)[^$]*)$"));
     }
     
     public static class ScoreMapper extends Mapper<Text, Text, Text, Text> {

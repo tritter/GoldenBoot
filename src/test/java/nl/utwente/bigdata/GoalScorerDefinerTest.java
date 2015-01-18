@@ -57,6 +57,14 @@ public class GoalScorerDefinerTest {
         mapDriver.withOutput(key, new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
+        @Test
+    public void testPlayerWithSpecialSurename() {
+        Text key = new Text("20140703053");
+        Text value = new Text("Hello world my Müller did score!");
+        mapDriver.withInput(key, value);
+        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
+        mapDriver.runTest();
+    }
     
     @Test
     public void testPlayerWithFirstname() {
@@ -83,7 +91,7 @@ public class GoalScorerDefinerTest {
     @Test
     public void testMapReduce() {
         Text key = new Text("20140703053");
-        Text value = new Text("Hello world my Mueller did score!");
+        Text value = new Text("Hello world my Müller did score!");
         mapReduceDriver.withInput(key, value);
         mapReduceDriver.withOutput(key, new Text("Thomas MUELLER"));
         mapReduceDriver.runTest();
