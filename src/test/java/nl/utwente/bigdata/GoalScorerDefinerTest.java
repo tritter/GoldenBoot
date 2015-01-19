@@ -27,7 +27,7 @@ public class GoalScorerDefinerTest {
     
     @Before
     public void setUp() {
-        GoalScorerDefiner.ScoreMapper mapper   = new GoalScorerDefiner.ScoreMapper();
+        GoalScorerDefiner.ScoreMapper mapper   = new GoalScorerDefiner.ScoreMapper("res/players.csv");
         GoalScorerDefiner.ScoreReducer reducer = new GoalScorerDefiner.ScoreReducer();
         mapDriver = MapDriver.newMapDriver(mapper);
         reduceDriver = ReduceDriver.newReduceDriver(reducer);

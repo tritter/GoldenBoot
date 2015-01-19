@@ -38,6 +38,7 @@ public class GoldenBoot {
     Job job1 = new Job(conf, "GoalDefiner");
     job1.setJarByClass(GoalDefiner.class);
     job1.setMapperClass(GoalMapper.class);
+    job1.setNumReduceTasks(0);
     job1.setOutputKeyClass(Text.class);
     job1.setOutputValueClass(Text.class);
     job1.setInputFormatClass(TextInputFormat.class);

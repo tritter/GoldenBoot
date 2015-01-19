@@ -4,17 +4,22 @@
  * and open the template in the editor.
  */
 package nl.utwente.bigdata;
-
+import java.net.URI;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.avro.generic.GenericData;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -35,7 +40,6 @@ import org.apache.hadoop.util.StringUtils;
  * @author ime
  */
 public class GoalScorerDefiner { 
-    private static final List<String[]> playerNames = importCSVFile("res/players.csv");
     
     private static String normalizeCharacters(String text){
         text = text.replace("ü", "ue");
@@ -58,14 +62,25 @@ public class GoalScorerDefiner {
     }
     
     public static class ScoreMapper extends Mapper<Object, Text, Text, Text> {
-        
+        private List<String[]> playerNames = new ArrayList<>();
+
+	public ScoreMapper (){
+	    this.playerNames = importCSVFile("/user/bigdata/player.csv");
+	};
+	public ScoreMapper (String path){
+	    this.playerNames = importCSVFile(path);
+	}
+	
         private final Text goalId = new Text();
-        private final Text player = new Text();
-        
-        public void map(Object key, Text value,Context context) throws IOException, InterruptedException {
+	private final Text player = new Text();
+	
+        @Override
+        public void map(Object key, Text value, Mapper.Context context)
+                        throws IOException, InterruptedException {
+	    
             String[] split = value.toString().split("\t");
             goalId.set(split[0]);
-    
+
             boolean playerFound = false;
             String tweet = String.valueOf(split[1]).toLowerCase();
             for (String[] playerName : playerNames) { //Surename
@@ -85,7 +100,7 @@ public class GoalScorerDefiner {
                     }
                 }
             }
-            
+       
             if(playerFound){
                 context.write(goalId, player);
             }
@@ -142,29 +157,26 @@ public class GoalScorerDefiner {
     }
 
      
-    public static List<String[]> importCSVFile(String csvFile) {
-        List<String[]> playerNames = new ArrayList<>();
-        BufferedReader br = null;
-        
-        String line;
-
-        try {
-            br = new BufferedReader(new FileReader(csvFile));
-            while ((line = br.readLine()) != null) {
-                String[] csvLine = line.split(";");
-                String fullPlayerName = csvLine[0];
-                playerNames.add(fullPlayerName.split(" "));
-            }
-        } 
-        catch (FileNotFoundException e) {} catch (IOException e) {} 
-        finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {}
-            }
-        }
-        return playerNames;
+    public static List<String[]> importCSVFile(String csvFile){
+	List<String[]> playerNames = new ArrayList<>();
+	try {
+	    Path file_path=new Path(csvFile);
+            FileSystem filesystem = FileSystem.get(URI.create("files/player.csv"),new Configuration());
+	    BufferedReader br = null;
+	    String line;
+	    br = new BufferedReader(new InputStreamReader(filesystem.open(file_path)));
+	    while ((line = br.readLine()) != null) {
+		String[] csvLine = line.split(";");
+		String fullPlayerName = csvLine[0];
+		playerNames.add(fullPlayerName.split(" "));
+	    }
+	    br.close();
+	} catch (FileNotFoundException ex) {
+	    Logger.getLogger(GoalScorerDefiner.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex) {
+	    Logger.getLogger(GoalScorerDefiner.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	return playerNames;
     }
     
     public static String getFirstName(String[] playerNames) {

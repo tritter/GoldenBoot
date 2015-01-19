@@ -110,6 +110,7 @@ public class GoalDefiner {
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
     job.setInputFormatClass(TextInputFormat.class);
+    job.setNumReduceTasks(0);
     job.setOutputFormatClass(TextOutputFormat.class);
     for (int i = 0; i < otherArgs.length - 1; ++i) {
       FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
