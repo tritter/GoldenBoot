@@ -15,9 +15,9 @@ import org.junit.Test;
 
 public class GoalPlayerCountTest {
     
-    private MapDriver<Text, Text, Text, IntWritable> mapDriver;
+    private MapDriver<Object, Text, Text, IntWritable> mapDriver;
     private ReduceDriver<Text,IntWritable,Text,IntWritable> reduceDriver;
-    private MapReduceDriver<Text, Text, Text, IntWritable, Text, IntWritable> mapReduceDriver;
+    private MapReduceDriver<Object, Text, Text, IntWritable, Text, IntWritable> mapReduceDriver;
     
     @Before
     public void setUp() {

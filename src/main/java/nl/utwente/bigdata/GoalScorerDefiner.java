@@ -16,12 +16,17 @@ import java.util.List;
 import java.util.Map.Entry;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.util.StringUtils;
 
@@ -52,31 +57,37 @@ public class GoalScorerDefiner {
         return (name != null && normalizedString.matches("^(.*?(\\b(" + name + ")\\b)[^$]*)$"));
     }
     
-    public static class ScoreMapper extends Mapper<Text, Text, Text, Text> {
+    public static class ScoreMapper extends Mapper<Object, Text, Text, Text> {
         
-        public void map(Text key, Text value,Context context) throws IOException, InterruptedException {
-            String tweet = String.valueOf(value).toLowerCase();
-            Text player = null;
+        private final Text goalId = new Text();
+        private final Text player = new Text();
+        
+        public void map(Object key, Text value,Context context) throws IOException, InterruptedException {
+            String[] split = value.toString().split("\t+");
+            goalId.set(split[0]);
+    
+            boolean playerFound = false;
+            String tweet = String.valueOf(split[1]).toLowerCase();
             for (String[] playerName : playerNames) { //Surename
-                boolean containsPlayer = containsPlayerName(getSurname(playerName), tweet);
-                if(containsPlayer){
-                    player = new Text(StringUtils.join(" ", playerName));
+                playerFound = containsPlayerName(getSurname(playerName), tweet);
+                if(playerFound){
+                    player.set(StringUtils.join(" ", playerName));
                     break;
                 }
             }
 
-            if(player == null){
+            if(!playerFound){
                 for (String[] playerName : playerNames) {
-                    boolean containsPlayer = containsPlayerName(getFirstName(playerName), tweet);
-                    if(containsPlayer){
-                        player = new Text(StringUtils.join(" ", playerName));
+                    playerFound = containsPlayerName(getFirstName(playerName), tweet);
+                    if(playerFound){
+                        player.set(StringUtils.join(" ", playerName));
                         break;
                     }
                 }
             }
             
-            if(player != null){
-                context.write(key, player);
+            if(playerFound){
+                context.write(goalId, player);
             }
         }
     }
@@ -122,6 +133,8 @@ public class GoalScorerDefiner {
         job.setReducerClass(GoalScorerDefiner.ScoreReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
             FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
         }

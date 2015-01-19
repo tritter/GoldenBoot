@@ -21,9 +21,9 @@ import org.junit.Test;
  * @author thom
  */
 public class GoalScorerDefinerTest {
-    private MapDriver<Text, Text, Text, Text> mapDriver;
+    private MapDriver<Object, Text, Text, Text> mapDriver;
     private ReduceDriver<Text,Text,Text,Text> reduceDriver;
-    private MapReduceDriver<Text, Text, Text, Text, Text, Text> mapReduceDriver;
+    private MapReduceDriver<Object, Text, Text, Text, Text, Text> mapReduceDriver;
     
     @Before
     public void setUp() {
@@ -38,8 +38,8 @@ public class GoalScorerDefinerTest {
     public void testNoPlayer() {
         List<Pair<Text, Text>> out = null;
         try {
-            Text key = new Text("20140703053");
-            Text value = new Text("Hello world my country did not score!");
+            Object key = new Object();
+            Text value = new Text("20140703053	Hello world my country did not score!");
             out = mapDriver.withInput(key, value).run();
             assert(out.isEmpty());
         } catch (IOException ioe) {
@@ -51,27 +51,27 @@ public class GoalScorerDefinerTest {
     
     @Test
     public void testPlayerWithSurename() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Hello world my Mueller did score!");
+        Object key = new Object();
+        Text value = new Text("20140703053	Hello world my Mueller did score!");
         mapDriver.withInput(key, value);
-        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
+        mapDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
         @Test
     public void testPlayerWithSpecialSurename() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Hello world my Müller did score!");
+        Object key = new Object();
+        Text value = new Text("20140703053	Hello world my Müller did score!");
         mapDriver.withInput(key, value);
-        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
+        mapDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
     
     @Test
     public void testPlayerWithFirstname() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Hello world my Thomas did score!");
+        Object key = new Object();
+        Text value = new Text("20140703053	Hello world my Thomas did score!");
         mapDriver.withInput(key, value);
-        mapDriver.withOutput(key, new Text("Thomas MUELLER"));
+        mapDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
         mapDriver.runTest();
     }
     
@@ -90,10 +90,10 @@ public class GoalScorerDefinerTest {
     
     @Test
     public void testMapReduce() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Hello world my Müller did score!");
+        Object key = new Object();
+        Text value = new Text("20140703053	Hello world my Müller did score!");
         mapReduceDriver.withInput(key, value);
-        mapReduceDriver.withOutput(key, new Text("Thomas MUELLER"));
+        mapReduceDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
         mapReduceDriver.runTest();
     }
  

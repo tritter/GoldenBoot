@@ -14,6 +14,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
@@ -23,10 +25,10 @@ import org.apache.hadoop.util.GenericOptionsParser;
  */
 public class GoalPlayerCount {
     public static class CountMapper
-    extends Mapper<Text, Text, Text, IntWritable>{
+    extends Mapper<Object, Text, Text, IntWritable>{
         private final static IntWritable one = new IntWritable(1);
         
-        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             context.write(value, one);
         }
     }
@@ -59,6 +61,7 @@ public class GoalPlayerCount {
         job.setMapperClass(CountMapper.class);
         job.setCombinerClass(CountReducer.class);
         job.setReducerClass(CountReducer.class);
+        job.setInputFormatClass(SequenceFileInputFormat.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
