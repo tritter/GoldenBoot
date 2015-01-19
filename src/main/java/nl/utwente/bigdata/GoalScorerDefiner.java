@@ -63,7 +63,7 @@ public class GoalScorerDefiner {
         private final Text player = new Text();
         
         public void map(Object key, Text value,Context context) throws IOException, InterruptedException {
-            String[] split = value.toString().split("\t+");
+            String[] split = value.toString().split("\t");
             goalId.set(split[0]);
     
             boolean playerFound = false;
@@ -126,15 +126,13 @@ public class GoalScorerDefiner {
             System.err.println("Usage: userCount <in> [<in>...] <out>");
             System.exit(2);
         }
-        Job job = new Job(conf, "Twitter UserCounter");
+        Job job = new Job(conf, "GoalScorerDefiner");
         job.setJarByClass(GoalScorerDefiner.class);
         job.setMapperClass(GoalScorerDefiner.ScoreMapper.class);
         job.setCombinerClass(GoalScorerDefiner.ScoreReducer.class);
         job.setReducerClass(GoalScorerDefiner.ScoreReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
             FileInputFormat.addInputPath(job, new Path(otherArgs[i]));
         }

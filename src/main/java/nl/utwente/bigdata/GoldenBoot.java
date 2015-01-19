@@ -36,7 +36,7 @@ public class GoldenBoot {
     
     //First Job - GoalDefiner, the tweet that are containing goals within 5 minute blocks 
     Job job1 = new Job(conf, "GoalDefiner");
-    job1.setJarByClass(GoalScorerDefiner.class);
+    job1.setJarByClass(GoalDefiner.class);
     job1.setMapperClass(GoalMapper.class);
     job1.setOutputKeyClass(Text.class);
     job1.setOutputValueClass(Text.class);
@@ -57,7 +57,7 @@ public class GoldenBoot {
     job2.setOutputValueClass(Text.class);
     job2.setInputFormatClass(TextInputFormat.class);
     job2.setOutputFormatClass(TextOutputFormat.class);
-    FileInputFormat.setInputPaths(job2, new Path("goal_definer_output"));
+    FileInputFormat.setInputPaths(job2, new Path("goal_definer_output/part*"));
     FileOutputFormat.setOutputPath(job2, new Path("goal_scorer_definer_output"));
 
     job2.waitForCompletion(true);
@@ -72,7 +72,7 @@ public class GoldenBoot {
     job3.setOutputValueClass(IntWritable.class);
     job3.setInputFormatClass(TextInputFormat.class);
     job3.setOutputFormatClass(TextOutputFormat.class);
-    FileInputFormat.setInputPaths(job3, new Path("goal_scorer_definer_output"));
+    FileInputFormat.setInputPaths(job3, new Path("goal_scorer_definer_output/*"));
     FileOutputFormat.setOutputPath(job3, new Path("golden_boot_output"));
 
     job3.waitForCompletion(true);

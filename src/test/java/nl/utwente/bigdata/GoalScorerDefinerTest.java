@@ -48,9 +48,18 @@ public class GoalScorerDefinerTest {
         }
         assert(out != null);
     }
-    
     @Test
     public void testPlayerWithSurename() {
+        Object key = new Object();
+        Text value = new Text("20140703053	RT @SportsCenter: USA wins World Cup opener vs Ghana, 2-1. Clint Dempsey scores in 1st minute, substitute John Brooks gets game-winner." +
+"");
+        mapDriver.withInput(key, value);
+        mapDriver.withOutput(new Text("20140703053"), new Text("Clint DEMPSEY"));
+        mapDriver.runTest();
+    }
+    
+    @Test
+    public void testOtherPlayerWithSurename() {
         Object key = new Object();
         Text value = new Text("20140703053	Hello world my Mueller did score!");
         mapDriver.withInput(key, value);

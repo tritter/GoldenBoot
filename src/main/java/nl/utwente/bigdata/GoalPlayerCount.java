@@ -15,6 +15,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
@@ -29,7 +30,7 @@ public class GoalPlayerCount {
         private final static Text player = new Text();
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            String[] split = value.toString().split("\t+");
+            String[] split = value.toString().split("\t");
             player.set(split[1]);
             context.write(player, one);
         }
@@ -63,8 +64,8 @@ public class GoalPlayerCount {
         job.setMapperClass(CountMapper.class);
         job.setCombinerClass(CountReducer.class);
         job.setReducerClass(CountReducer.class);
-        job.setInputFormatClass(SequenceFileInputFormat.class);
-        job.setOutputKeyClass(Text.class);
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputKeyClass(TextInputFormat.class);
         job.setOutputValueClass(IntWritable.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
             FileInputFormat.addInputPath(job, new Path(otherArgs[i]));

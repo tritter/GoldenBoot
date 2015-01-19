@@ -73,7 +73,7 @@ public class GoalDefiner {
         @Override
         public void map(Object key, Text value, Mapper.Context context
                         ) throws IOException, InterruptedException {
-            String[] split = value.toString().split("\t+");
+            String[] split = value.toString().split("\t");
             
             //Get tweet text
 	    if(split.length < 5)return;
@@ -105,7 +105,7 @@ public class GoalDefiner {
       System.exit(2);
     }
     Job job = new Job(conf, "GoalDefiner");
-    job.setJarByClass(GoalScorerDefiner.class);
+    job.setJarByClass(GoalDefiner.class);
     job.setMapperClass(GoalMapper.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
