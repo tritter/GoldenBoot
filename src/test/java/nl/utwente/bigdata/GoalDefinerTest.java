@@ -26,7 +26,7 @@ public class GoalDefinerTest {
         List<Pair<Text, Text>> out = null;
         try {
             Object key = new Object();
-            Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world my country did not score!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
+            Text value = new Text("2014070305320140703053	1	Thu Jul 03 05:17:20 +0000 2014	en	Hello world my country did not score!");
             out = mapDriver.withInput(key, value).run();
             assert(out.isEmpty());
         } catch (IOException ioe) {
@@ -39,7 +39,7 @@ public class GoalDefinerTest {
     @Test
     public void testGoalWithKeyword() {
         Object key = new Object();
-        Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world my country scored a Japenese ゴール!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
+        Text value = new Text("2014070305320140703053	1	Thu Jul 03 05:17:20 +0000 2014	en	Hello world my country scored a Japenese ゴール!");
         mapDriver.withInput(key, value);
         mapDriver.withOutput(new Text("20140703053"), new Text("Hello world my country scored a Japenese ゴール!"));
         mapDriver.runTest();
@@ -48,7 +48,7 @@ public class GoalDefinerTest {
     @Test
     public void testGoalWithScore() {
         Object key = new Object();
-        Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world my country scored 1-1!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
+        Text value = new Text("2014070305320140703053	1	Thu Jul 03 05:17:20 +0000 2014	en	Hello world my country scored 1-1!");
         mapDriver.withInput(key, value);
         mapDriver.withOutput(new Text("20140703053"), new Text("Hello world my country scored 1-1!"));
         mapDriver.runTest();

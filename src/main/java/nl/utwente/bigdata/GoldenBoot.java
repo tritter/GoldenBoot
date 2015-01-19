@@ -18,7 +18,9 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  *
@@ -38,7 +40,8 @@ public class GoldenBoot {
     job1.setMapperClass(GoalMapper.class);
     job1.setOutputKeyClass(Text.class);
     job1.setOutputValueClass(Text.class);
-
+    job1.setInputFormatClass(TextInputFormat.class);
+    job1.setOutputFormatClass(TextOutputFormat.class);
     FileInputFormat.setInputPaths(job1, new Path(other_args.get(0)));
     FileOutputFormat.setOutputPath(job1, new Path("goal_definer_output"));
 
@@ -52,7 +55,8 @@ public class GoldenBoot {
     job2.setReducerClass(ScoreReducer.class);
     job2.setOutputKeyClass(Text.class);
     job2.setOutputValueClass(Text.class);
-
+    job2.setInputFormatClass(TextInputFormat.class);
+    job2.setOutputFormatClass(TextOutputFormat.class);
     FileInputFormat.setInputPaths(job2, new Path("goal_definer_output"));
     FileOutputFormat.setOutputPath(job2, new Path("goal_scorer_definer_output"));
 
@@ -66,7 +70,8 @@ public class GoldenBoot {
     job3.setReducerClass(CountReducer.class);
     job3.setOutputKeyClass(Text.class);
     job3.setOutputValueClass(IntWritable.class);
-
+    job3.setInputFormatClass(TextInputFormat.class);
+    job3.setOutputFormatClass(TextOutputFormat.class);
     FileInputFormat.setInputPaths(job3, new Path("goal_scorer_definer_output"));
     FileOutputFormat.setOutputPath(job3, new Path("golden_boot_output"));
 

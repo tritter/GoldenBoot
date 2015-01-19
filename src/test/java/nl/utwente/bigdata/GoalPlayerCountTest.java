@@ -30,8 +30,8 @@ public class GoalPlayerCountTest {
     
     @Test
     public void testMapper() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Arjen Robben");
+        Object key = new Object();
+        Text value = new Text("20140703053	Arjen Robben");
         mapDriver.withInput(key, value);
         mapDriver.withOutput(new Text("Arjen Robben"), new IntWritable(1));
         mapDriver.runTest();
@@ -49,10 +49,10 @@ public class GoalPlayerCountTest {
     
     @Test
     public void testMapReduce() {
-        Text key = new Text("20140703053");
-        Text value = new Text("Arjen Robben");
+        Object key = new Object();
+        Text value = new Text("20140703053	Arjen Robben");
         mapReduceDriver.withInput(key, value);
-        mapReduceDriver.withOutput(value, new IntWritable(1));
+        mapReduceDriver.withOutput(new Text("Arjen Robben"), new IntWritable(1));
         mapReduceDriver.runTest();
     }
     
