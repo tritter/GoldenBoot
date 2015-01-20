@@ -11,22 +11,27 @@ To run the map reduce jobs you need to have a kafka instance running on your mac
 ### Load data
 
 Load the tweets tsv into the kafka instance:
-hadoop fs -put res/tweets.tsv tweets.tsv
+
+    hadoop fs -put res/tweets.tsv tweets.tsv
 
 Load the player csv into the kafka instance:
-hadoop fs -put res/players.csv player.csv
+
+    hadoop fs -put res/players.csv player.csv
 
 ### Build Jar
 
 Go into the project directory clean & build the Jar file:
-mvn clean && mvn package
+
+    mvn clean && mvn package
 
 ### Execute map reduce
 
 Start the map reduce jobs:
-hadoop jar bigdata-0.1.jar nl.utwente.bigdata.GoldenBoot tweets*.tsv
+
+    hadoop jar bigdata-0.1.jar nl.utwente.bigdata.GoldenBoot tweets*.tsv
 
 ### Print result
 
 Print and sort the result:
-fs -cat golden_boot_output/part* | sort -t$'\t' -nrk2
+
+    fs -cat golden_boot_output/part* | sort -t$'\t' -nrk2
