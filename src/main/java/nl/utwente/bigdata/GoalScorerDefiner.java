@@ -65,7 +65,7 @@ public class GoalScorerDefiner {
         private List<String[]> playerNames = new ArrayList<>();
 
 	public ScoreMapper (){
-	    this.playerNames = importCSVFile("/user/bigdata/player.csv");
+	    this.playerNames = importCSVFile("player.csv");
 	};
 	public ScoreMapper (String path){
 	    this.playerNames = importCSVFile(path);
