@@ -34,4 +34,4 @@ Start the map reduce jobs:
 
 Print and sort the result:
 
-    hadoop fs -cat golden_boot_output/part* | sort -t$'\t' -nrk2
+    hadoop fs -cat golden_boot_output/part* | sort -t$'\t' -nk2
