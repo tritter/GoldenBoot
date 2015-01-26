@@ -32,12 +32,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 import org.json.simple.parser.JSONParser;
-
 
 public class GoalDefiner {
   private static SimpleDateFormat dateFormatter(String format){
@@ -84,9 +82,12 @@ public class GoalDefiner {
             try {
                 tweet = (Map<String, Object>) parser.parse(value.toString());
             }
-            catch (ClassCastException | org.json.simple.parser.ParseException e) {
-                return; // do nothing (we might log this)-            
-	    }
+            catch (ClassCastException e) {
+                return; // do nothing (we might log this)
+            }
+            catch (org.json.simple.parser.ParseException e) {
+                return; // do nothing
+            }
              //Get tweet text
             tweetText.set(((String) tweet.get("text")).replaceAll("\n", " "));
              
