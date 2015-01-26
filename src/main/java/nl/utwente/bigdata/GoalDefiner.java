@@ -101,12 +101,12 @@ public class GoalDefiner {
                  String timeRangeKey = getMinuteKey(createdAt);
 
                 goalKey.set(timeRangeKey);
+		context.write(goalKey, tweetText);
             }
             catch (java.text.ParseException e) {  
                 return; // do nothing 
             }
 	     
-            context.write(goalKey, tweetText);
         }
     }
 
