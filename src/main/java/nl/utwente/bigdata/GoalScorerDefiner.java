@@ -79,8 +79,9 @@ public class GoalScorerDefiner {
                         throws IOException, InterruptedException {
 	    
             String[] split = value.toString().split("\t");
-            goalId.set(split[0]);
+            if(split.length <= 1) return;
 
+            goalId.set(split[0]);            
             boolean playerFound = false;
             String tweet = String.valueOf(split[1]).toLowerCase();
             for (String[] playerName : playerNames) { //Surename

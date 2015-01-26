@@ -37,6 +37,15 @@ public class GoalDefinerTest {
     }
     
     @Test
+    public void testGoalWithSpecialKeyword() {
+        Object key = new Object();
+        Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"هدف#كولومبيا الاول على #ساحل_العاج   #colombia 1st Goal vs #ivorycoast   #WorldCup #Fifa… http://t.co/AQygwfnyrw!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");
+        mapDriver.withInput(key, value);
+        mapDriver.withOutput(new Text("20140703053"), new Text("هدف#كولومبيا الاول على #ساحل_العاج   #colombia 1st Goal vs #ivorycoast   #WorldCup #Fifa… http://t.co/AQygwfnyrw!"));
+        mapDriver.runTest();
+    }
+    
+    @Test
     public void testGoalWithKeyword() {
         Object key = new Object();
         Text value = new Text("{\"filter_level\":\"medium\",\"contributors\":null,\"text\":\"Hello world my country scored a Japenese ゴール!\",\"id_str\":\"1\", \"user\":{\"id_str\":\"1\"},\"created_at\":\"Thu Jul 03 05:17:20 +0000 2014\"}");

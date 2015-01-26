@@ -69,15 +69,14 @@ public class GoalDefiner {
   
  public static class GoalMapper
     extends Mapper<Object, Text, Text, Text>{
-        
-        private final Text goalKey = new Text();
-        private final Text tweetText = new Text();
-        private final JSONParser parser = new JSONParser();
-	private Map tweet;    
-	
-         @Override
-         public void map(Object key, Text value, Mapper.Context context
-                         ) throws IOException, InterruptedException {
+     
+       private Text goalKey  = new Text();
+       private Text tweetText = new Text();
+       private JSONParser parser = new JSONParser();
+       private Map tweet;
+
+       public void map(Object key, Text value, Context context
+                       ) throws IOException, InterruptedException {
            
             try {
                 tweet = (Map<String, Object>) parser.parse(value.toString());
