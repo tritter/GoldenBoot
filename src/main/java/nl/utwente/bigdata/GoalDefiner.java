@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.hadoop.conf.Configuration;
@@ -31,8 +32,12 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
+
+import org.json.simple.parser.JSONParser;
+
 
 public class GoalDefiner {
   private static SimpleDateFormat dateFormatter(String format){
@@ -69,29 +74,37 @@ public class GoalDefiner {
         
         private final Text goalKey = new Text();
         private final Text tweetText = new Text();
-                
-        @Override
-        public void map(Object key, Text value, Mapper.Context context
-                        ) throws IOException, InterruptedException {
-            String[] split = value.toString().split("\t");
-            
-            //Get tweet text
-	    if(split.length < 5)return;
-            tweetText.set(split[4]);
-            
-            //Check if tweet is a goal if not return
-            if(!isGoal(tweetText)) return;
-            
-            //Get timestamp as key
-            String createdAtString = split[2];
-            try { 
-                Date createdAt = getTwitterDate(createdAtString);
-                String timeRangeKey = getMinuteKey(createdAt);
+        private final JSONParser parser = new JSONParser();
+	private Map tweet;    
+	
+         @Override
+         public void map(Object key, Text value, Mapper.Context context
+                         ) throws IOException, InterruptedException {
+           
+            try {
+                tweet = (Map<String, Object>) parser.parse(value.toString());
+            }
+            catch (ClassCastException | org.json.simple.parser.ParseException e) {
+                return; // do nothing (we might log this)-            
+	    }
+             //Get tweet text
+            tweetText.set(((String) tweet.get("text")).replaceAll("\n", " "));
+             
+             //Check if tweet is a goal if not return
+             if(!isGoal(tweetText)) return;
+             
+             //Get timestamp as key
+            String createdAtString = (String)tweet.get("created_at");
+             try { 
+                 Date createdAt = getTwitterDate(createdAtString);
+                 String timeRangeKey = getMinuteKey(createdAt);
+
                 goalKey.set(timeRangeKey);
             }
             catch (java.text.ParseException e) {  
                 return; // do nothing 
             }
+	     
             context.write(goalKey, tweetText);
         }
     }
