@@ -124,12 +124,15 @@ public class GoalScorerDefiner {
             }
             
             int maxValueInMap = (Collections.max(playerCountMap.values()));
+            
             for (Entry<Text, Integer> entry : playerCountMap.entrySet()) {  
                 if (entry.getValue()==maxValueInMap) {
-                    playerResult = entry.getKey();
+                    playerResult.set(entry.getKey());
                 }
             }
-
+            if(maxValueInMap < 300){
+                playerResult.set("NO REAL GOAL");
+            }
             context.write(key, playerResult);
         }
         

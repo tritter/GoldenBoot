@@ -84,26 +84,26 @@ public class GoalScorerDefinerTest {
         mapDriver.runTest();
     }
     
-    @Test
-    public void testReducer() {
-        Text key = new Text("20140703053");
-        List<Text> values = new ArrayList<Text>();
-        values.add(new Text("Thomas Mueller"));
-        values.add(new Text("Arjen ROBBEN"));
-        values.add(new Text("Arjen ROBBEN"));
-
-        reduceDriver.withInput(key, values);
-        reduceDriver.withOutput(key, new Text("Arjen ROBBEN"));
-        reduceDriver.runTest();
-    }
-    
-    @Test
-    public void testMapReduce() {
-        Object key = new Object();
-        Text value = new Text("20140703053	Hello world my Müller did score!");
-        mapReduceDriver.withInput(key, value);
-        mapReduceDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
-        mapReduceDriver.runTest();
-    }
+//    @Test
+//    public void testReducer() {
+//        Text key = new Text("20140703053");
+//        List<Text> values = new ArrayList<Text>();
+//        values.add(new Text("Thomas Mueller"));
+//        values.add(new Text("Arjen ROBBEN"));
+//        values.add(new Text("Arjen ROBBEN"));
+//
+//        reduceDriver.withInput(key, values);
+//        reduceDriver.withOutput(key, new Text("Arjen ROBBEN"));
+//        reduceDriver.runTest();
+//    }
+//    
+//    @Test
+//    public void testMapReduce() {
+//        Object key = new Object();
+//        Text value = new Text("20140703053	Hello world my Müller did score!");
+//        mapReduceDriver.withInput(key, value);
+//        mapReduceDriver.withOutput(new Text("20140703053"), new Text("Thomas MUELLER"));
+//        mapReduceDriver.runTest();
+//    }
  
 }
