@@ -130,7 +130,7 @@ public class GoalScorerDefiner {
                     playerResult.set(entry.getKey());
                 }
             }
-            if(maxValueInMap < 300){
+            if(maxValueInMap < 3){
                 playerResult.set("NO REAL GOAL");
             }
             context.write(key, playerResult);
